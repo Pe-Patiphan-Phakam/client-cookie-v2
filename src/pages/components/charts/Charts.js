@@ -163,20 +163,20 @@ class Charts extends React.Component {
         if (sliDateNow===sliDateDB) {
           if (strPath!=undefined) {
             if (strPath==="/") { dPath.push("index") }
-            else { dPath.push(strPath.split("/")[1].slice(0,10)) }
+            else { dPath.push(strPath.slice(0,10)) }
             dPeople.push(strPeople)
           }
         }
         if (getMonth===dbMonth) {
           if (strPath!=undefined){
             if (strPath==='/') { mPath.push("index") }
-            else { mPath.push(strPath.split("/")[1].slice(0,10)) }
+            else { mPath.push(strPath.slice(0,10)) }
             mPeople.push(strPeople)
           }
         }
         if (sliDateDB>=fDay && sliDateDB<=lDay && strPath!=undefined) {
           if (strPath==='/') { wPath.push("index") }
-          else { wPath.push(strPath.split("/")[1].slice(0,10)) }
+          else { wPath.push(strPath.slice(0,10)) }
           wPeople.push(strPeople)
         }
 
