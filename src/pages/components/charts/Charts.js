@@ -1405,12 +1405,12 @@ class Charts extends React.Component {
                 title={
                   <h5>
                     <span className="fw-semi-bold">
-                      <select id="1" onChange={this.findYear}>
+                      <select id="1" onChange={this.findYear} style={{backgroundColor: "#2477ff", borderRadius: "4px", fontSize: "16px", marginRight: "5px"}}>
                         {keyArrYearPre.map((item, index) => (
                           <option value={item} selected={this.state.selYear1===item?true:false} hidden={this.state.selYear2===item?true:false}>{item}</option>
                         ))}
                       </select>
-                      <select id="2" onChange={this.findYear}>
+                      <select id="2" onChange={this.findYear} style={{backgroundColor: "#2477ff", borderRadius: "4px", fontSize: "16px"}}>
                         {keyArrYearPre.map((item, index) => (
                           <option value={item} selected={this.state.selYear2===item?true:false} hidden={this.state.selYear1===item?true:false}>{item}</option>
                         ))}
@@ -1429,7 +1429,7 @@ class Charts extends React.Component {
                 />
               </Widget>
             </Col>
-            <Col lg={12} xs={12}>
+            {/* <Col lg={12} xs={12}>
               <Widget
                 title={
                   <Select options={this.state.options} 
@@ -1441,7 +1441,7 @@ class Charts extends React.Component {
               >
                 <HighchartsReact options={cd.highcharts.mixed} />
               </Widget>
-            </Col>
+            </Col> */}
             
             {/* <Col lg={7} xs={12}>
               <Row>

@@ -143,7 +143,26 @@ class Dashboard extends React.Component {
         </Row>
 
         <Row>
-          <Col lg={4}>
+
+          <Col lg={12}>
+          <Widget
+              title={
+                <h5>
+                  Table <span className="fw-semi-bold">Data</span>
+                </h5>
+              }
+              bodyClass={s.mainTableWidget}
+            >
+              <MDBDataTable
+                striped
+                small
+                data={this.state.dataTable}
+              />
+              </Widget>
+          </Col>
+          
+          </Row>
+          {/*<Col lg={4}>
             <Widget
               className="bg-transparent"
               title={
@@ -215,26 +234,7 @@ class Dashboard extends React.Component {
             <Widget className="bg-transparent">
               <Pie />
             </Widget>
-          </Col>
-
-          <Col lg={12}>
-          <Widget
-              title={
-                <h5>
-                  Table <span className="fw-semi-bold">Data</span>
-                </h5>
-              }
-              bodyClass={s.mainTableWidget}
-            >
-              <MDBDataTable
-                striped
-                small
-                data={this.state.dataTable}
-              />
-              </Widget>
-          </Col>
-          
-          </Row>
+            </Col> */}
         {/* <Row>
           <Col lg={6} xl={4} xs={12}>
             <Widget title={<h6> USERBASE GROWTH </h6>} close settings>

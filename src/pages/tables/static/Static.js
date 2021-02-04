@@ -564,7 +564,7 @@ class Static extends React.Component {
           </Col>
         </Row>
 
-        <Row>
+       {/* <Row>
           <Col lg={6}>
             <Widget
               title={
@@ -694,7 +694,6 @@ class Static extends React.Component {
                       <th>Status</th>
                     </tr>
                   </thead>
-                  {/* eslint-disable */}
                   <tbody>
                     <tr>
                       <td>1</td>
@@ -749,7 +748,7 @@ class Static extends React.Component {
                       </td>
                     </tr>
                   </tbody>
-                  {/* eslint-enable */}
+                  
                 </Table>
               </div>
             </Widget>
@@ -1095,6 +1094,7 @@ class Static extends React.Component {
             </Widget>
           </Col>
         </Row>
+      */}
 
         <Modal 
           class="modal-dialog modal-90w" 
