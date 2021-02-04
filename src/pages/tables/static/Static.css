@@ -1,0 +1,47 @@
+.check {
+    top: .65rem;
+    font-size: 16px;
+    /* color: #4467ff; */
+    cursor: pointer;
+  }
+  .noncheck {
+    top: .65rem;
+    font-size: 16px;
+    color: #ffffff;
+    cursor: pointer;
+  }
+  .modal-dialog {
+    max-width: none;
+    margin: 0.5rem;
+  }
+  .pagination > .page-item > .page-link {
+      color: #29323a
+  }
+  .my-address {
+    font-size: 40px;
+    margin-top: -14px;
+    margin-left: 5px;
+  }
+  a.disabled {
+    pointer-events: none;
+    cursor: default;
+    color: rgba(125, 125, 126, 0.3);
+    /* ba54f5 */
+  }
+  .modal-content .modal-body p {
+    color: #fff;
+    margin-right: 20px;
+  }
+  .form-check-input {
+    /* margin-left: 10px; */
+  }
+  .yel{
+    color: #ffd600;
+  }
+  .txt1rem {
+    font-size: 1rem;
+  }
+  .form-control:disabled, .form-control[readonly] {
+    background-color: #040620;
+    opacity: 1;
+  }
