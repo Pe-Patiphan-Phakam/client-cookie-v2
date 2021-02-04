@@ -107,8 +107,8 @@ class Charts extends React.Component {
         },
       },
       Mode: "day",
-      selYear1: dateNow.getFullYear()-1,
-      selYear2: dateNow.getFullYear(),
+      selYear1: JSON.stringify(dateNow.getFullYear()-1),
+      selYear2: JSON.stringify(dateNow.getFullYear()),
       keyArrYearPre: [],
       dn: new Date(),
       options: [
@@ -182,10 +182,10 @@ class Charts extends React.Component {
 
         var yearPre = response.data[i].createdAt.slice(0, 4)
         arrYearPre.push(yearPre)
-        if (this.state.selYear1===parseInt(yearPre)) {
+        if (this.state.selYear1===yearPre) {
           yearPre1.push(response.data[i].createdAt.slice(0, 7))
         }
-        if (this.state.selYear2===parseInt(yearPre)) {
+        if (this.state.selYear2===yearPre) {
           yearPre2.push(response.data[i].createdAt.slice(0, 7))
         }
       }
@@ -235,6 +235,8 @@ class Charts extends React.Component {
         cntPWW: cntPWW.length,
         cntPMM: cntPMM.length,
         keyArrYearPre: keyArrYearPre,
+        year1: valYear1,
+        year2: valYear2,
         cd: {
           apex: {
             columnD: {
@@ -1404,15 +1406,13 @@ class Charts extends React.Component {
                   <h5>
                     <span className="fw-semi-bold">
                       <select id="1" onChange={this.findYear}>
-                        <option selected disabled>year1</option>
                         {keyArrYearPre.map((item, index) => (
-                          <option value={item}>{item}</option>
+                          <option value={item} selected={this.state.selYear1===item?true:false} hidden={this.state.selYear2===item?true:false}>{item}</option>
                         ))}
                       </select>
                       <select id="2" onChange={this.findYear}>
-                        <option selected disabled>year2</option>
                         {keyArrYearPre.map((item, index) => (
-                          <option value={item} hidden={this.state.selYear1===item?true:false}>{item}</option>
+                          <option value={item} selected={this.state.selYear2===item?true:false} hidden={this.state.selYear1===item?true:false}>{item}</option>
                         ))}
                       </select>
                       </span>
