@@ -6,11 +6,11 @@ import axios from 'axios';
 import Widget from "../../components/Widget";
 
 // import Calendar from "./components/calendar/Calendar";
-import Map from "./components/am4chartMap/am4chartMap";
+import Map from "./am4chartMap/am4chartMap";
 // import Rickshaw from "./components/rickshaw/Rickshaw";
-import Pie from "./components/am4chartMap/am4pieMap"
+import Pie from "./am4chartMap/am4pieMap"
 
-import AnimateNumber from "react-animated-number";
+// import AnimateNumber from "./am4chartMap/node_modules/react-animated-number";
 
 import s from "./Dashboard.module.scss";
 
@@ -86,7 +86,8 @@ class Dashboard extends React.Component {
               id: item.cookieId,
               address: <div className="text-center">{item.chkVal
                 ?<a href={"https://www.google.com/maps/place/"+item.latlng} target="_blank">
-                <span className="glyphicon glyphicon-map-marker" />
+                {/*<span className="glyphicon glyphicon-map-marker" />*/}
+                <Badge color="primary"><i class="fas fa-map-marker-alt"></i> allow</Badge>
                 </a>
                 :<Badge color="danger">disallow</Badge>}
               </div>,
