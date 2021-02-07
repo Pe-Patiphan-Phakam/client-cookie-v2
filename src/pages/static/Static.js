@@ -18,12 +18,15 @@ import {
 import { MDBDataTable } from 'mdbreact';
 import Switch from '@material-ui/core/Switch';
 import axios from 'axios';
+
 import { Modal } from 'react-bootstrap';
 // import { Sparklines, SparklinesBars } from "react-sparklines";
 
 import Widget from "../../components/Widget";
 import "./Static.css"
 import s from "./Static.module.scss";
+
+// const SERVER_PATH = localStorage.getItem('path')
 
 class Static extends React.Component {
   constructor(props) {
@@ -32,6 +35,7 @@ class Static extends React.Component {
     var localISOTime = (new Date(Date.now() - tzoffset)).toISOString().slice(0, 10);
     console.log(localISOTime)
     this.state = {
+      SERVER_PATH: localStorage.getItem('path'),
       checkboxes1: [false, true, false, false],
       checkboxes2: [false, false, false, false, false, false],
       checkboxes3: [false, false, false, false, false, false],
@@ -53,7 +57,7 @@ class Static extends React.Component {
 
   getData() {
     const _ = require("lodash");
-    axios.get("http://127.0.0.1:5000/cookies/api/data")
+    axios.get(""+this.state.SERVER_PATH+"/api/data")
     .then((response) => {
       console.log(response.data)
       var test = [];
@@ -151,7 +155,7 @@ class Static extends React.Component {
         _id: Item._id,
         access: Item.access,
     }
-    axios.post("http://127.0.0.1:5000/cookies/api/update", value)
+    axios.post(""+this.state.SERVER_PATH+"/api/update", value)
     .then((response) => {
         this.getData();
         this.setState({
@@ -162,7 +166,7 @@ class Static extends React.Component {
   modalClick = (e) => {
     const Item = JSON.parse(e.target.id)
     if (Item.path==='') { Item.path = "index" }
-    axios.get("http://127.0.0.1:5000/cookies/api/agree/"+Item.cookieId+"")
+    axios.get(""+this.state.SERVER_PATH+"/api/agree/"+Item.cookieId+"")
     .then((response) => {
       var rowVal = [];
       for (var i=0; i<response.data.length; i++) {
@@ -253,7 +257,7 @@ class Static extends React.Component {
       type: this.state.txtType,
       browser: this.state.txtBrowser,
     }
-    axios.post("http://127.0.0.1:5000/cookies/api/data/search", value)
+    axios.post(""+this.state.SERVER_PATH+"/api/data/search", value)
     .then((response) => {
       var test = [];
       for (var i=0; i<response.data.length; i++) {
@@ -335,7 +339,7 @@ class Static extends React.Component {
             //   :<i className="fas fa-times-circle noncheck" id={'{"_id":"'+item._id+'", "access":"'+item.access+'"}'} onClick={this.changeStatus}></i>}
             // </div>,
               detail: <div className="text-center">
-                <i className={item.access==='1'?"far fa-eye text-primary check":"far fa-eye check"} onClick={this.modalClick}
+                <i className={item.access==='1'?"fas fa-info-circle text-primary check":"fas fa-info-circle check"} onClick={this.modalClick}
                   id={'{"cookieId":"'+item.cookieId+'", "datetime":"'+item.datetime+'", "access":"'+item.access+'", "_id":"'+item._id+'", "ip":"'+item.ip+'", "type":"'+item.type+'", "path":"'+item.path+'", "browser":"'+item.browser+'", "typeId":"'+item.typeId+'", "latlng":"'+item.latlng+'", "chkVal":"'+item.chkVal+'"}'}
                 ></i>
               </div>
@@ -1200,7 +1204,7 @@ class Static extends React.Component {
                   <p>● Are necessary for the proper functioning of the websites</p>
                   <p>● Enable you to book a flight and access your account securely</p>
                   <p>● do not collect any personal information</p>
-                  {this.state.typeId===3
+                  {this.state.typeId==="3"
                   ?<div className="yel"> Please note: Disabling these cookies may impact your browsing experience onour website.</div>
                   :''}
                   </FormGroup>
@@ -1217,7 +1221,7 @@ class Static extends React.Component {
                     <p>● Help us detect any bugs and improve our websites</p>
                     <p>● Collect anonymous information about your visits to our websites</p>
                     <p>● Are never used for marketing purposes</p>
-                    {this.state.typeId===2
+                    {this.state.typeId==="2"
                     ?<div className="yel"> Please note: Disabling these cookies may impact your browsing experience onour website.</div>
                     :''}
                     

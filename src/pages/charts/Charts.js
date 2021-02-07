@@ -6,13 +6,13 @@ import Widget from "../../components/Widget";
 import ApexChart from "react-apexcharts";
 
 import s from "./Charts.module.scss";
-import { chartData, liveChart, liveChartInterval, colors, columnColors, lineColors } from "./mock";
-// import Sparklines from "../../../components/Sparklines";
+import "./Charts.css"
+import { chartData, colors, columnColors, lineColors } from "./mock";
 
 import ReactEchartsCore from "echarts-for-react/lib/core";
 
 import echarts from "echarts/lib/echarts";
-// import Select from 'react-select'
+import Select from 'react-select'
 import "echarts/lib/chart/line";
 import "echarts/lib/chart/pie";
 import "echarts/lib/chart/themeRiver";
@@ -20,7 +20,7 @@ import "echarts/lib/component/tooltip";
 import "echarts/lib/component/legend";
 
 import Highcharts from "highcharts";
-// import HighchartsReact from "highcharts-react-official";
+import HighchartsReact from "highcharts-react-official";
 import exporting from "highcharts/modules/exporting";
 import exportData from "highcharts/modules/export-data";
 
@@ -28,42 +28,22 @@ import ReactFC from 'react-fusioncharts';
 import FusionCharts from 'fusioncharts';
 import Widgets from 'fusioncharts/fusioncharts.widgets';
 import FusionTheme from 'fusioncharts/themes/fusioncharts.theme.fusion';
-// import ReactFusioncharts from "react-fusioncharts";
 
 exporting(Highcharts);
 exportData(Highcharts);
 ReactFC.fcRoot(FusionCharts, Widgets, FusionTheme);
 
+// const SERVER_PATH = "http://127.0.0.1:5000/cookies"
 
 class Charts extends React.Component {
   constructor(props) {
     super(props);
-    this.getAgree();
     var dateNow = new Date();
     this.state = {
+      SERVER_PATH: localStorage.getItem('path'),
       cd: chartData,
-      ld: liveChart,
       initEchartsOptions: {
         renderer: "canvas",
-      },
-      sparklineData: {
-        series: [{ data: [1, 7, 3, 5, 7, 8] }],
-        options1: {
-          colors: ["#db2a34"],
-          plotOptions: {
-            bar: {
-              columnWidth: "50%",
-            },
-          },
-        },
-        options2: {
-          colors: ["#2477ff"],
-          plotOptions: {
-            bar: {
-              columnWidth: "50%",
-            },
-          },
-        },
       },
       Mode: "day",
       selYear1: JSON.stringify(dateNow.getFullYear()-1),
@@ -71,24 +51,22 @@ class Charts extends React.Component {
       keyArrYearPre: [],
       dn: new Date(),
       options: [
-        { value: 'about', label: 'about' },
-        { value: 'strawberry', label: 'Strawberry' },
+        { value: '/th/', label: '/th/' },
+        { value: '/th/lm/', label: '/th/lm/' },
         { value: 'vanilla', label: 'Vanilla' }
-      ]
+      ],
+      allPath: []
     }
+    this.getAgree();
   };
   componentDidMount() {
     // this.timer = setInterval(() => 
     //   this.getAgree(),10000
     // )
-  }
-
-  componentWillUnmount() {
-    clearInterval(liveChartInterval);
+    // this.findPage([this.state.allPath[0], this.state.allPath[1], this.state.allPath[2]]);
   }
 
   getAgree() {
-    console.log('get')
     const _ = require("lodash");
     var dPath = [];
     var mPath = [];
@@ -101,60 +79,68 @@ class Charts extends React.Component {
     var mDonut = [];
     var yearPre1 = [];
     var yearPre2 = [];
+    var monthPre1 = [];
+    var monthPre2 = [];
     var arrYearPre = [];
-    axios.get("http://127.0.0.1:5000/cookies/api/agree")
+    var allPath = [];
+    axios.get(""+this.state.SERVER_PATH+"/api/agree")
     .then((response) => {
+      console.log(response.data)
       var dateNow = new Date();
-      var sliDateNow = dateNow.toLocaleString().slice(0, 9)
+      var sliDateNow = dateNow.toLocaleDateString();
       var first = dateNow.getDate() - dateNow.getDay();
       var last = first + 6;
-      var firstday = new Date(new Date().setDate(first)).toLocaleString();
-      var lastday = new Date(new Date().setDate(last)).toLocaleString();
-      var fDay = firstday.slice(0, 9)
-      var lDay = lastday.slice(0, 9)
+      var firstday = new Date(new Date().setDate(first)).toLocaleDateString();
+      var lastday = new Date(new Date().setDate(last)).toLocaleDateString();
+
       for (var i=0; i<response.data.length; i++) {
-        var sliDateDB = new Date(response.data[i].createdAt).toLocaleString().slice(0, 9)
+        var localDateDB = new Date(response.data[i].createdAt).toLocaleDateString();
         var strPath = response.data[i].data[5].pathname
         var strPeople = response.data[i].cookieId
         var DateDB = new Date(response.data[i].createdAt);
         var dbMonth = DateDB.getMonth();
         var getMonth = dateNow.getMonth();
-        if (sliDateNow===sliDateDB) {
-          if (strPath!=undefined) {
-            if (strPath==="/") { dPath.push("index") }
+
+        if (strPath!=undefined) {
+          allPath.push({ value: strPath, label: strPath.slice(0,10) })
+          if (sliDateNow===localDateDB) {
+            if (strPath==='/') { dPath.push("index") }
             else { dPath.push(strPath.slice(0,10)) }
             dPeople.push(strPeople)
           }
-        }
-        if (getMonth===dbMonth) {
-          if (strPath!=undefined){
+          if (getMonth===dbMonth) {
             if (strPath==='/') { mPath.push("index") }
             else { mPath.push(strPath.slice(0,10)) }
             mPeople.push(strPeople)
           }
+          if (localDateDB>=firstday) {
+            if (strPath==='/') { wPath.push("index") }
+            else { wPath.push(strPath.slice(0,10)) }
+            wPeople.push(strPeople)
+          }
         }
-        if (sliDateDB>=fDay && sliDateDB<=lDay && strPath!=undefined) {
-          if (strPath==='/') { wPath.push("index") }
-          else { wPath.push(strPath.slice(0,10)) }
-          wPeople.push(strPeople)
-        }
-
+        
         var yearPre = response.data[i].createdAt.slice(0, 4)
         arrYearPre.push(yearPre)
         if (this.state.selYear1===yearPre) {
           yearPre1.push(response.data[i].createdAt.slice(0, 7))
+          monthPre1.push(new Date(response.data[i].createdAt).getMonth())
         }
         if (this.state.selYear2===yearPre) {
           yearPre2.push(response.data[i].createdAt.slice(0, 7))
+          monthPre2.push(new Date(response.data[i].createdAt).getMonth())
         }
       }
-
+      
       var dayCnt = _.countBy(dPath); 
-      var valDay = Object.values(dayCnt) 
+      var valDay = Object.values(dayCnt);
+
       var monthCnt = _.countBy(mPath); 
       var valMonth = Object.values(monthCnt);
+
       var weekCnt = _.countBy(wPath); 
       var valWeek = Object.values(weekCnt);
+
       var cntPD = _.countBy(dPeople);
       var cntPW = _.countBy(wPeople);
       var cntPM= _.countBy(mPeople);
@@ -162,15 +148,26 @@ class Charts extends React.Component {
       var cntPWW = Object.values(cntPW);
       var cntPMM = Object.values(cntPM);
 
+      var cntMonth1 = _.countBy(monthPre1);
+      var keyMonth1 = Object.keys(cntMonth1);
+      var cntMonth2 = _.countBy(monthPre2);
+      var keyMonth2 = Object.keys(cntMonth2);
+      var valYear1 =[]
+      var valYear2 =[]
+      for (var i=0; i<keyMonth1.length; i++) {
+        valYear1.push(0)
+      }
+      for (var i=0; i<keyMonth2.length; i++) {
+        valYear2.push(0)
+      }
       var cntYear1 = _.countBy(yearPre1);
       var valYear1 = Object.values(cntYear1);
 
       var cntYear2 = _.countBy(yearPre2);
-      var valYear2 = Object.values(cntYear2);
-      
+      valYear2.push(Object.values(cntYear2)[0]);
+
       var cntArrYearPre = _.countBy(arrYearPre);
       var keyArrYearPre = Object.keys(cntArrYearPre)
-      console.log(keyArrYearPre)
       for (var i=0; i<valDay.length; i++) {
         dDonut.push({ value: valDay[i], name: Array.from(new Set(dPath))[i] })
       }
@@ -196,7 +193,12 @@ class Charts extends React.Component {
         keyArrYearPre: keyArrYearPre,
         year1: valYear1,
         year2: valYear2,
+        allPath: allPath,
+      })
+      this.setState(prevState => ({
+        ...prevState,
         cd: {
+          ...prevState.cd,
           apex: {
             columnD: {
               series: [
@@ -842,193 +844,8 @@ class Charts extends React.Component {
               ],
             },
           },
-          highcharts: {
-            mixed: {
-              chart: {
-                type: "spline",
-                height: 350,
-                backgroundColor: "transparent",
-              },
-              exporting: {
-                enabled: false,
-              },
-              title: {
-                text: "Snow depth at Vikjafjellet, Norway",
-                style: {
-                  color: colors.textColor,
-                },
-              },
-              credits: {
-                enabled: false,
-              },
-              xAxis: {
-                type: "datetime",
-                dateTimeLabelFormats: {
-                  // don't display the dummy year
-                  month: "%e. %b",
-                  year: "%b",
-                },
-                labels: {
-                  style: {
-                    color: colors.textColor,
-                  },
-                },
-              },
-              yAxis: {
-                min: 0,
-                title: {
-                  enabled: false,
-                },
-                labels: {
-                  style: {
-                    color: colors.textColor,
-                  },
-                },
-                gridLineColor: colors.gridLineColor,
-              },
-              tooltip: {
-                headerFormat: "<b>{series.name}</b><br>",
-                pointFormat: "{point.x:%e. %b}: {point.y:.2f} m",
-              },
-              legend: {
-                enabled: false,
-              },
-              plotOptions: {
-                series: {
-                  marker: {
-                    enabled: false,
-                    symbol: "circle",
-                  },
-                },
-              },
-              colors: [colors.green, colors.blue, colors.red],
-              series: [
-                {
-                  name: "Winter 2014-2015",
-                  data: [
-                    [Date.UTC(1970, 10, 25), 0],
-                    [Date.UTC(1970, 11, 6), 0.25],
-                    [Date.UTC(1970, 11, 20), 1.41],
-                    [Date.UTC(1970, 11, 25), 1.64],
-                    [Date.UTC(1971, 0, 4), 1.6],
-                    [Date.UTC(1971, 0, 17), 2.55],
-                    [Date.UTC(1971, 0, 24), 2.62],
-                    [Date.UTC(1971, 1, 4), 2.5],
-                    [Date.UTC(1971, 1, 14), 2.42],
-                    [Date.UTC(1971, 2, 6), 2.74],
-                    [Date.UTC(1971, 2, 14), 2.62],
-                    [Date.UTC(1971, 2, 24), 2.6],
-                    [Date.UTC(1971, 3, 1), 2.81],
-                    [Date.UTC(1971, 3, 11), 2.63],
-                    [Date.UTC(1971, 3, 27), 2.77],
-                    [Date.UTC(1971, 4, 4), 2.68],
-                    [Date.UTC(1971, 4, 9), 2.56],
-                    [Date.UTC(1971, 4, 14), 2.39],
-                    [Date.UTC(1971, 4, 19), 2.3],
-                    [Date.UTC(1971, 5, 4), 2],
-                    [Date.UTC(1971, 5, 9), 1.85],
-                    [Date.UTC(1971, 5, 14), 1.49],
-                    [Date.UTC(1971, 5, 19), 1.27],
-                    [Date.UTC(1971, 5, 24), 0.99],
-                    [Date.UTC(1971, 5, 29), 0.67],
-                    [Date.UTC(1971, 6, 3), 0.18],
-                    [Date.UTC(1971, 6, 4), 0],
-                  ],
-                },
-                {
-                  name: "Winter 2015-2016",
-                  type: "areaspline",
-                  data: [
-                    [Date.UTC(1970, 10, 9), 0],
-                    [Date.UTC(1970, 10, 15), 0.23],
-                    [Date.UTC(1970, 10, 20), 0.25],
-                    [Date.UTC(1970, 10, 25), 0.23],
-                    [Date.UTC(1970, 10, 30), 0.39],
-                    [Date.UTC(1970, 11, 5), 0.41],
-                    [Date.UTC(1970, 11, 10), 0.59],
-                    [Date.UTC(1970, 11, 15), 0.73],
-                    [Date.UTC(1970, 11, 20), 0.41],
-                    [Date.UTC(1970, 11, 25), 1.07],
-                    [Date.UTC(1970, 11, 30), 0.88],
-                    [Date.UTC(1971, 0, 5), 0.85],
-                    [Date.UTC(1971, 0, 11), 0.89],
-                    [Date.UTC(1971, 0, 17), 1.04],
-                    [Date.UTC(1971, 0, 20), 1.02],
-                    [Date.UTC(1971, 0, 25), 1.03],
-                    [Date.UTC(1971, 0, 30), 1.39],
-                    [Date.UTC(1971, 1, 5), 1.77],
-                    [Date.UTC(1971, 1, 26), 2.12],
-                    [Date.UTC(1971, 3, 19), 2.1],
-                    [Date.UTC(1971, 4, 9), 1.7],
-                    [Date.UTC(1971, 4, 29), 0.85],
-                    [Date.UTC(1971, 5, 7), 0],
-                  ],
-                },
-                {
-                  name: "Winter 2016-2017",
-                  type: "areaspline",
-                  data: [
-                    [Date.UTC(1970, 9, 15), 0],
-                    [Date.UTC(1970, 9, 31), 0.09],
-                    [Date.UTC(1970, 10, 7), 0.17],
-                    [Date.UTC(1970, 10, 10), 0.1],
-                    [Date.UTC(1970, 11, 10), 0.1],
-                    [Date.UTC(1970, 11, 13), 0.1],
-                    [Date.UTC(1970, 11, 16), 0.11],
-                    [Date.UTC(1970, 11, 19), 0.11],
-                    [Date.UTC(1970, 11, 22), 0.08],
-                    [Date.UTC(1970, 11, 25), 0.23],
-                    [Date.UTC(1970, 11, 28), 0.37],
-                    [Date.UTC(1971, 0, 16), 0.68],
-                    [Date.UTC(1971, 0, 19), 0.55],
-                    [Date.UTC(1971, 0, 22), 0.4],
-                    [Date.UTC(1971, 0, 25), 0.4],
-                    [Date.UTC(1971, 0, 28), 0.37],
-                    [Date.UTC(1971, 0, 31), 0.43],
-                    [Date.UTC(1971, 1, 4), 0.42],
-                    [Date.UTC(1971, 1, 7), 0.39],
-                    [Date.UTC(1971, 1, 10), 0.39],
-                    [Date.UTC(1971, 1, 13), 0.39],
-                    [Date.UTC(1971, 1, 16), 0.39],
-                    [Date.UTC(1971, 1, 19), 0.35],
-                    [Date.UTC(1971, 1, 22), 0.45],
-                    [Date.UTC(1971, 1, 25), 0.62],
-                    [Date.UTC(1971, 1, 28), 0.68],
-                    [Date.UTC(1971, 2, 4), 0.68],
-                    [Date.UTC(1971, 2, 7), 0.65],
-                    [Date.UTC(1971, 2, 10), 0.65],
-                    [Date.UTC(1971, 2, 13), 0.75],
-                    [Date.UTC(1971, 2, 16), 0.86],
-                    [Date.UTC(1971, 2, 19), 1.14],
-                    [Date.UTC(1971, 2, 22), 1.2],
-                    [Date.UTC(1971, 2, 25), 1.27],
-                    [Date.UTC(1971, 2, 27), 1.12],
-                    [Date.UTC(1971, 2, 30), 0.98],
-                    [Date.UTC(1971, 3, 3), 0.85],
-                    [Date.UTC(1971, 3, 6), 1.04],
-                    [Date.UTC(1971, 3, 9), 0.92],
-                    [Date.UTC(1971, 3, 12), 0.96],
-                    [Date.UTC(1971, 3, 15), 0.94],
-                    [Date.UTC(1971, 3, 18), 0.99],
-                    [Date.UTC(1971, 3, 21), 0.96],
-                    [Date.UTC(1971, 3, 24), 1.15],
-                    [Date.UTC(1971, 3, 27), 1.18],
-                    [Date.UTC(1971, 3, 30), 1.12],
-                    [Date.UTC(1971, 4, 3), 1.06],
-                    [Date.UTC(1971, 4, 6), 0.96],
-                    [Date.UTC(1971, 4, 9), 0.87],
-                    [Date.UTC(1971, 4, 12), 0.88],
-                    [Date.UTC(1971, 4, 15), 0.79],
-                    [Date.UTC(1971, 4, 18), 0.54],
-                    [Date.UTC(1971, 4, 21), 0.34],
-                    [Date.UTC(1971, 4, 25), 0],
-                  ],
-                },
-              ],
-            },
-          },
-        },
-      })
+        }
+      }))
     })
   }
 
@@ -1037,7 +854,7 @@ class Charts extends React.Component {
       year: e.target.value
     }
     var id = e.target.id
-    axios.post("http://127.0.0.1:5000/cookies/api/agree/findyear", value)
+    axios.post(""+this.state.SERVER_PATH+"/api/agree/findyear", value)
     .then((response) => {
       if (id === "1") {
         this.setState({ 
@@ -1201,14 +1018,86 @@ class Charts extends React.Component {
   }
 
   findPage = (value) => {
-    axios.post("http://127.0.0.1:5000/cookies/api/agree/findpage", value)
+    console.log(this.state.allPath)
+    axios.post(""+this.state.SERVER_PATH+"/api/agree/findpage", value)
     .then((response) => {
       console.log(response.data)
+      this.setState(prevState => ({
+        ...prevState,
+        cd: {
+            ...prevState.cd,
+            highcharts: {
+              ...prevState.cd.highcharts,
+              mixed: {
+                ...prevState.cd.echarts.mixed,
+                chart: {
+                  type: "spline",
+                  height: 350,
+                  backgroundColor: "transparent",
+                },
+                exporting: {
+                  enabled: false,
+                },
+                title: {
+                  text: "Pages",
+                  style: {
+                    color: colors.textColor,
+                  },
+                },
+                credits: {
+                  enabled: false,
+                },
+                xAxis: {
+                  type: "datetime",
+                  dateTimeLabelFormats: {
+                    // don't display the dummy year
+                    month: "%e. %b",
+                    year: "%b",
+                  },
+                  labels: {
+                    style: {
+                      color: colors.textColor,
+                    },
+                  },
+                },
+                yAxis: {
+                  min: 0,
+                  title: {
+                    enabled: false,
+                  },
+                  labels: {
+                    style: {
+                      color: colors.textColor,
+                    },
+                  },
+                  gridLineColor: colors.gridLineColor,
+                },
+                tooltip: {
+                  headerFormat: "<b>{series.name}</b><br>",
+                  pointFormat: "{point.x:%e. %b}: {point.y}",
+                },
+                legend: {
+                  enabled: false,
+                },
+                plotOptions: {
+                  series: {
+                    marker: {
+                      enabled: false,
+                      symbol: "circle",
+                    },
+                  },
+                },
+                colors: columnColors,
+                series: response.data,
+              }
+            }
+        }
+      })) 
     })
   }
 
   render() {
-    const { cd, ld, initEchartsOptions, sparklineData, Mode, keyArrYearPre, dn } = this.state;
+    const { cd, initEchartsOptions, Mode, keyArrYearPre, dn } = this.state;
     return (
       <div className={s.root}>
         <h1 className="page-title">
@@ -1226,8 +1115,8 @@ class Charts extends React.Component {
                       </h5>
                     }
                   >
-                    <h2><i class="far fa-bell"></i> {this.state.lenDay} time</h2>
-                    <h2><i class="fas fa-user-friends"></i> {this.state.cntPDD} people</h2>
+                    <h2><i class="far fa-bell"></i> {this.state.lenDay} view</h2>
+                    <h2><i class="far fa-user"></i> {this.state.cntPDD} people</h2>
                   </Widget>
                 </Col>
                 <Col lg={3} xs={12}>
@@ -1237,10 +1126,9 @@ class Charts extends React.Component {
                         <span className="fw-semi-bold">Week</span>
                       </h5>
                     }
-                    
                   >
-                    <h2><i class="far fa-bell"></i> {this.state.lenWeek} time</h2>
-                    <h2><i class="fas fa-user-friends"></i> {this.state.cntPWW} people</h2>
+                    <h2><i class="far fa-bell"></i> {this.state.lenWeek} view</h2>
+                    <h2><i class="far fa-user"></i> {this.state.cntPWW} people</h2>
                   </Widget>
                 </Col>
                 <Col lg={3} xs={12}>
@@ -1250,10 +1138,9 @@ class Charts extends React.Component {
                         <span className="fw-semi-bold">Month</span>
                       </h5>
                     }
-                    
                   >
-                    <h2><i class="far fa-bell"></i> {this.state.lenMonth} time</h2>
-                    <h2><i class="fas fa-user-friends"></i> {this.state.cntPMM} people</h2>
+                    <h2><i class="far fa-bell"></i> {this.state.lenMonth} view</h2>
+                    <h2><i class="far fa-user"></i> {this.state.cntPMM} people</h2>
                   </Widget>
                 </Col>
               </Row>
@@ -1304,18 +1191,24 @@ class Charts extends React.Component {
                 }
               </Widget>
             </Col>
-            
             <Col lg={5} xs={12}>
+              
               <Row>
                 <Col lg={12} xs={12}>
                   <Widget
                     title={
                       <h5>
-                        <span className="fw-semi-bold">{this.state.Mode}</span>
+                        <span className="fw-semi-bold">Rating Meter</span>
                       </h5>
                     }
-                    
                   >
+                  {/* <ReactFusioncharts
+                    type="angulargauge"
+                    width={453}
+                    height={250}
+                    dataFormat="JSON"
+                    dataSource={dataSource}
+                  /> */}
                   {this.state.Mode==="day"
                     ?<ReactEchartsCore
                       echarts={echarts}
@@ -1372,6 +1265,76 @@ class Charts extends React.Component {
                 />
               </Widget>
             </Col>
+            {/* <Col lg={12} xs={12}>
+              <Widget
+                title={
+                  <Select options={Array.from(new Set(this.state.allPath))} 
+                  defaultValue={[this.state.allPath[1]]} 
+                  isMulti
+                  onChange={this.findPage}/>
+                }
+              >
+                <HighchartsReact options={cd.highcharts.mixed} />
+              </Widget>
+            </Col> */}
+            
+            {/* <Col lg={7} xs={12}>
+              <Row>
+                <Col lg={6} xs={12}>
+                  <Widget
+                    title={
+                      <h5>
+                        Apex{" "}
+                        <span className="fw-semi-bold">Monochrome Pie</span>
+                      </h5>
+                    }
+                    close
+                    collapse
+                  >
+                    <ApexChart
+                      className="sparkline-chart"
+                      type={"pie"}
+                      height={200}
+                      series={cd.apex.pie.series}
+                      options={cd.apex.pie.options}
+                    />
+                  </Widget>
+                </Col>
+                
+                <Col lg={12} xs={12}>
+                  <Widget
+                    title={
+                      <h5>
+                        Highcharts{" "}
+                        <span className="fw-semi-bold">Live Chart</span>
+                      </h5>
+                    }
+                    close
+                    collapse
+                  >
+                    <HighchartsReact options={ld} />
+                  </Widget>
+                </Col>
+              </Row>
+            </Col>
+            <Col lg={12} xs={12}> 
+              <Widget
+                title={
+                  <h5>
+                    Echarts <span className="fw-semi-bold">River Chart</span>
+                  </h5>
+                }
+                close
+                collapse
+              >
+                <ReactEchartsCore
+                  echarts={echarts}
+                  option={cd.echarts.river}
+                  opts={initEchartsOptions}
+                  style={{ height: "350px" }}
+                />
+              </Widget>
+            </Col>*/}
           
           </Row>
         </div>

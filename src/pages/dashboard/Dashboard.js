@@ -8,21 +8,17 @@ import Widget from "../../components/Widget";
 // import Calendar from "./components/calendar/Calendar";
 import Map from "./am4chartMap/am4chartMap";
 // import Rickshaw from "./components/rickshaw/Rickshaw";
-import Pie from "./am4chartMap/am4pieMap"
+// import Pie from "./am4chartMap/am4pieMap"
 
 // import AnimateNumber from "./am4chartMap/node_modules/react-animated-number";
 
 import s from "./Dashboard.module.scss";
 
-// import peopleA1 from "../../images/people/a1.jpg";
-// import peopleA2 from "../../images/people/a2.jpg";
-// import peopleA5 from "../../images/people/a5.jpg";
-// import peopleA4 from "../../images/people/a4.jpg";
-
 class Dashboard extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      SERVER_PATH: localStorage.getItem('path'),
       graph: null,
       checkedArr: [false, false, false],
     };
@@ -34,7 +30,7 @@ class Dashboard extends React.Component {
   }
 
   getData() {
-    axios.get("http://127.0.0.1:5000/cookies/api/data")
+    axios.get(""+this.state.SERVER_PATH+"/api/data")
     .then((response) => {
       var rowVal = [];
       for (var i=0; i<response.data.length; i++) {

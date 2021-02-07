@@ -106,7 +106,7 @@ class Login extends React.Component {
                     </Widget>
                 </Container>
                 <footer className="auth-footer">
-                {new Date().getFullYear()} &copy; Dashboard <a href="https://flatlogic.com" rel="noopener noreferrer" target="_blank">Flatlogic LLC</a>.
+                {new Date().getFullYear()} &copy; Dashboard <a href="" rel="noopener noreferrer" target="_blank">Cookies</a>.
                 </footer>
             </div>
         );

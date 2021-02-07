@@ -34,15 +34,18 @@ export function logoutUser() {
     return (dispatch) => {
         dispatch(requestLogout());
         localStorage.removeItem('authenticated');
+        localStorage.removeItem('path');
         dispatch(receiveLogout());
     };
 }
 
 export function loginUser(creds) {
+    const MAIN_PATH = 'http://127.0.0.1:5000/cookies';
     return async (dispatch) => {
-        const res = await axios.post('http://127.0.0.1:5000/cookies/api/users/checklogin', creds);
+        const res = await axios.post(''+MAIN_PATH+'/api/users/checklogin', creds);
         if (res.data.data.statusLogin === true) {
             localStorage.setItem('authenticated', true);
+            localStorage.setItem('path', res.data.data.data[0].path);
             dispatch(receiveLogin());
         } else {
             dispatch(loginError('Please check username and password. Try again'));

@@ -9,6 +9,7 @@ import s from "./am4chartMap.module.scss";
 
 class Am4chartMap extends Component {
   state={
+    SERVER_PATH: localStorage.getItem('path'),
     cntUser: ''
   }
   componentDidMount() {
@@ -16,7 +17,7 @@ class Am4chartMap extends Component {
   }
 
   getMap() {
-    axios.get('http://127.0.0.1:5000/cookies/api/data/map')
+    axios.get(''+this.state.SERVER_PATH+'/api/data/map')
     .then((response) => {
       console.log(response)
       this.setState({cntUser: response.data.am4Val.length})
