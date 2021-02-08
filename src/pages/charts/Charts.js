@@ -83,18 +83,20 @@ class Charts extends React.Component {
     var monthPre2 = [];
     var arrYearPre = [];
     var allPath = [];
+    var valPath = [];
+    var labPath = [];
     axios.get(""+this.state.SERVER_PATH+"/api/agree")
     .then((response) => {
-      console.log(response.data)
       var dateNow = new Date();
-      var sliDateNow = dateNow.toLocaleDateString();
+      var localDateNow = (dateNow.toLocaleDateString()).split(",")[0];
       var first = dateNow.getDate() - dateNow.getDay();
       var last = first + 6;
       var firstday = new Date(new Date().setDate(first)).toLocaleDateString();
       var lastday = new Date(new Date().setDate(last)).toLocaleDateString();
 
       for (var i=0; i<response.data.length; i++) {
-        var localDateDB = new Date(response.data[i].createdAt).toLocaleDateString();
+        var localDateDB = (new Date(response.data[i].createdAt).toLocaleDateString()).split(",")[0];
+        // console.log(localDateDB)
         var strPath = response.data[i].data[5].pathname
         var strPeople = response.data[i].cookieId
         var DateDB = new Date(response.data[i].createdAt);
@@ -102,8 +104,9 @@ class Charts extends React.Component {
         var getMonth = dateNow.getMonth();
 
         if (strPath!=undefined) {
-          allPath.push({ value: strPath, label: strPath.slice(0,10) })
-          if (sliDateNow===localDateDB) {
+          valPath.push(strPath)
+          labPath.push(strPath.slice(0,20))
+          if (localDateNow===localDateDB) {
             if (strPath==='/') { dPath.push("index") }
             else { dPath.push(strPath.slice(0,10)) }
             dPeople.push(strPeople)
@@ -147,6 +150,14 @@ class Charts extends React.Component {
       var cntPDD = Object.values(cntPD);
       var cntPWW = Object.values(cntPW);
       var cntPMM = Object.values(cntPM);
+
+      var cntVP = _.countBy(valPath);
+      var cntLP = _.countBy(labPath);
+      var keyVP = Object.keys(cntVP);
+      var keyLP = Object.keys(cntLP);
+      keyVP.forEach((element, index) => {
+        allPath.push({ value: element, label: keyLP[index] })
+      });
 
       var cntMonth1 = _.countBy(monthPre1);
       var keyMonth1 = Object.keys(cntMonth1);
@@ -1018,7 +1029,6 @@ class Charts extends React.Component {
   }
 
   findPage = (value) => {
-    console.log(this.state.allPath)
     axios.post(""+this.state.SERVER_PATH+"/api/agree/findpage", value)
     .then((response) => {
       console.log(response.data)
@@ -1192,13 +1202,12 @@ class Charts extends React.Component {
               </Widget>
             </Col>
             <Col lg={5} xs={12}>
-              
               <Row>
                 <Col lg={12} xs={12}>
                   <Widget
                     title={
                       <h5>
-                        <span className="fw-semi-bold">Rating Meter</span>
+                        <span className="fw-semi-bold">{this.state.Mode}</span>
                       </h5>
                     }
                   >
@@ -1265,18 +1274,18 @@ class Charts extends React.Component {
                 />
               </Widget>
             </Col>
-            {/* <Col lg={12} xs={12}>
+            <Col lg={12} xs={12}>
               <Widget
                 title={
-                  <Select options={Array.from(new Set(this.state.allPath))} 
-                  defaultValue={[this.state.allPath[1]]} 
+                  <Select options={this.state.allPath} 
+                  // defaultValue={[this.state.allPath[1]]} 
                   isMulti
                   onChange={this.findPage}/>
                 }
               >
                 <HighchartsReact options={cd.highcharts.mixed} />
               </Widget>
-            </Col> */}
+            </Col>
             
             {/* <Col lg={7} xs={12}>
               <Row>
